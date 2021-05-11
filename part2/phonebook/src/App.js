@@ -1,0 +1,70 @@
+import React, { useState } from 'react'
+import Filter from './components/Filter'
+import PersonalForm from './components/PersonalForm'
+import Persons from './components/Persons'
+
+const App = () => {
+  // Initial App's databse of the names and phone numbers
+  const [ persons, setPersons ] = useState ([
+    { name: 'Arto Hellas', number: '040-123456' },
+    { name: 'Ada Lovelace', number: '39-44-5323523' },
+    { name: 'Dan Abramov', number: '12-43-234345' },
+    { name: 'Mary Poppendieck', number: '39-23-6423122' },
+  ])
+  // App's cState declarations and events
+  const [ newName, setNewName ] = useState('')
+  const [ newNumber, setNewNumber ] = useState('')
+  const [ filterName, setFilterName ] = useState('')
+  const [ showAllNames, setShowAllNames ] = useState(true)
+  /* The code bleow indicates which lists of the name the website will show.
+   * ShowAllNames is set of all names and FilterNames will show only filtered 
+   * names entered by the user, which uses RegExp library and determine if the 
+   * character(s) in the form will match the names in the phonebook. If so, the 
+   * "showAllNames" is set to False and will display the names that includes 
+   * the character(s) in the form. However, the order of the chracters will not
+   * matter (combination instead of permutation) and thus will need to be revised 
+   * later on to account of this situation
+   */
+  const nameToShow = showAllNames ? persons : persons.filter(person=>person.name.toLowerCase().includes(filterName.toLowerCase()))
+
+  // Event Handlers
+  const handleNewName = ( event ) => setNewName(event.target.value)
+  const handleNewNumber = ( event ) => setNewNumber(event.target.value)
+  const handleFilterName = ( event ) => {
+    let regex = new RegExp(event.target.value, "gi")
+    setShowAllNames(!regex.test(persons.map(person=>person.name)))
+    setFilterName(event.target.value)
+  }
+
+  // Controller for Adding new person into the phonebook
+  const addPerson = ( event ) => {
+    event.preventDefault()
+    const personObject = {
+      name : newName,
+      number : newNumber,
+    }
+    if ( persons.some(person => person.name === newName)){
+      window.alert( newName + " is already added to phonebook.")
+      setNewName('')
+      setNewNumber('')
+    } else {
+      setPersons(persons.concat(personObject))
+      setNewName('')
+      setNewNumber('')
+    }
+  }
+
+  return (
+    <div>
+      <h2>Phonebook</h2>
+      <Filter name={filterName} eventHandler={handleFilterName}/>
+      <h2>add a new</h2>
+      <PersonalForm submitEvent={addPerson} nameValue={newName} nameChange={handleNewName} numberValue={newNumber} numberChange={handleNewNumber} />
+      <h2>Numbers</h2>
+      <Persons phonebook={nameToShow} />
+    </div>
+  )
+}
+
+
+export default App
