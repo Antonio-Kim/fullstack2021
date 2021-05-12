@@ -1,16 +1,25 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 import Filter from './components/Filter'
 import PersonalForm from './components/PersonalForm'
 import Persons from './components/Persons'
 
 const App = () => {
   // Initial App's databse of the names and phone numbers
-  const [ persons, setPersons ] = useState ([
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' },
-  ])
+  const [ persons, setPersons ] = useState ([])
+
+  /* A Promise is an object representing the eventual completion or failure of 
+   * an asynchronous operation. The Effect Hook lets you perform side effects in 
+   * function components. Data fetching, setting up a subscription, and manually 
+   * changing the DOM in React components are all examples of side effects.
+   */
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response=>{
+        setPersons(response.data)
+      })
+  }, [])
   // App's cState declarations and events
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
