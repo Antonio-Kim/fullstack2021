@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import Filter from './components/Filter'
 import PersonalForm from './components/PersonalForm'
 import Persons from './components/Persons'
+import Phonebook from './services/phonebook'
+import axios from 'axios'
 
 const App = () => {
   // Initial App's databse of the names and phone numbers
@@ -14,10 +15,10 @@ const App = () => {
    * changing the DOM in React components are all examples of side effects.
    */
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response=>{
-        setPersons(response.data)
+    Phonebook
+      .getAll()
+      .then(initialLists =>{
+        setPersons(initialLists)
       })
   }, [])
   // App's cState declarations and events
@@ -25,7 +26,7 @@ const App = () => {
   const [ newNumber, setNewNumber ] = useState('')
   const [ filterName, setFilterName ] = useState('')
   const [ showAllNames, setShowAllNames ] = useState(true)
-  /* The code bleow indicates which lists of the name the website will show.
+  /* The code below indicates which lists of the name the website will show.
    * ShowAllNames is set of all names and FilterNames will show only filtered 
    * names entered by the user, which uses RegExp library and determine if the 
    * character(s) in the form will match the names in the phonebook. If so, the 
@@ -57,9 +58,13 @@ const App = () => {
       setNewName('')
       setNewNumber('')
     } else {
-      setPersons(persons.concat(personObject))
-      setNewName('')
-      setNewNumber('')
+      Phonebook
+        .create(personObject)
+        .then(newPerson =>{
+          setPersons(persons.concat(newPerson))
+          setNewName('')
+          setNewNumber('')
+        })
     }
   }
 
