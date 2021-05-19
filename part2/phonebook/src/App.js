@@ -1,9 +1,9 @@
+import axios from 'axios'
 import React, { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import PersonalForm from './components/PersonalForm'
 import Persons from './components/Persons'
 import Phonebook from './services/phonebook'
-import axios from 'axios'
 
 const App = () => {
   // Initial App's databse of the names and phone numbers
@@ -46,6 +46,14 @@ const App = () => {
     setFilterName(event.target.value)
   }
 
+  const toggleDelete = (id) => {
+    const url = `http://localhost:3001/persons/${id}`
+    const nameID = persons.find(p=> p.id === id)
+    axios.delete(url, nameID)
+    axios.get(url).then(response=>{
+      setPersons(response.data)
+    })
+  }
   // Controller for Adding new person into the phonebook
   const addPerson = ( event ) => {
     event.preventDefault()
@@ -67,7 +75,7 @@ const App = () => {
         })
     }
   }
-
+  //console.log(nameToShow.map(name=>name.id))
   return (
     <div>
       <h2>Phonebook</h2>
@@ -75,10 +83,11 @@ const App = () => {
       <h2>add a new</h2>
       <PersonalForm submitEvent={addPerson} nameValue={newName} nameChange={handleNewName} numberValue={newNumber} numberChange={handleNewNumber} />
       <h2>Numbers</h2>
-      <Persons phonebook={nameToShow} />
+      {nameToShow.map((person, i)=>
+        <Persons key={i} phonebook={person} deletePerson={()=>toggleDelete(person.id)}/>
+      )}
     </div>
   )
 }
-
 
 export default App

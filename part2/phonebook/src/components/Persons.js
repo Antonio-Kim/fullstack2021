@@ -1,9 +1,9 @@
 import React from 'react'
 
-const Persons =({phonebook}) => {
+const Persons =({phonebook, deletePerson}) => {
   return (
     <div>
-      {phonebook.map(person=><div>{person.name} {person.number}</div>)}
+      {phonebook.name} {phonebook.number} <button onClick={deletePerson}>delete</button>
     </div>
   )
 }
